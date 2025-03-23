@@ -11,7 +11,7 @@ import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
 import ProductCard from './ProductCard';
 
-export default function SwiperMobile({ onAddToCart }) {
+export default function SwiperMobile({ skips, getSkipDescription, getSkipFeatures, calculateFinalPrice, onAddToCart, cart }) {
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
 
   // Automatically hide the indicator after some scrolling
@@ -27,66 +27,6 @@ export default function SwiperMobile({ onAddToCart }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
- 
-  // Skip options for reuse
-  const skipOptions = [
-    {
-      id: 1,
-      size: '4',
-      title: '4 Yard Skip',
-      description: 'Ideal for small domestic projects and garden waste',
-      features: [
-        '14 day hire period',
-        'Delivery and collection included',
-        'Environmentally friendly waste disposal',
-      ],
-      price: '216',
-      permitRequired: false,
-      image: '/images/skip.jpg'
-    },
-    {
-      id: 2,
-      size: '6',
-      title: '6 Yard Skip',
-      description: 'Perfect for medium home renovations and commercial use',
-      features: [
-        '14 day hire period',
-        'Delivery and collection included',
-        'Suitable for heavy materials',
-      ],
-      price: '246',
-      permitRequired: false,
-      image: '/images/skip.jpg'
-    },
-    {
-      id: 3,
-      size: '8',
-      title: '8 Yard Skip',
-      description: 'Ideal for large renovation projects and building sites',
-      features: [
-        '14 day hire period',
-        'Delivery and collection included',
-        'Commercial waste license included',
-      ],
-      price: '276',
-      permitRequired: false,
-      image: '/images/skip.jpg'
-    },
-    {
-      id: 4,
-      size: '10',
-      title: '10 Yard Skip',
-      description: 'For major construction projects and industrial waste',
-      features: [
-        '14 day hire period',
-        'Delivery and collection included',
-        'Hazardous waste disposal available',
-      ],
-      price: '306',
-      permitRequired: true,
-      image: '/images/skip.jpg'
-    },
-  ];
 
   return (
     <div className="relative">
@@ -95,43 +35,34 @@ export default function SwiperMobile({ onAddToCart }) {
         modules={[Pagination]}
         className="mySwiper"
       >
-        {skipOptions.map((skip) => (
-          <SwiperSlide key={skip.id}>
+        {skips.map((skip) => (
+          <SwiperSlide key={skip.id} >
             <ProductCard 
-              size={skip.size}
-              title={skip.title}
-              description={skip.description}
-              features={skip.features}
-              price={skip.price}
-              permitRequired={skip.permitRequired}
-              onAddToCart={() => onAddToCart && onAddToCart(skip)}
+              size={skip.size.toString()}
+              title={`${skip.size} Yard Skip`}
+              description={getSkipDescription(skip.size)}
+              features={getSkipFeatures(skip)}
+              price={calculateFinalPrice(skip).toString()}
+              permitRequired={!skip.allowed_on_road}
+              isSelected={cart && cart.id === skip.id}
+              onAddToCart={() => onAddToCart && onAddToCart({
+                id: skip.id,
+                size: skip.size.toString(),
+                title: `${skip.size} Yard Skip`,
+                description: getSkipDescription(skip.size),
+                price: calculateFinalPrice(skip).toString(),
+                image: '/images/skip.jpg',
+                permitRequired: !skip.allowed_on_road,
+                allowsHeavyWaste: skip.allows_heavy_waste,
+                hirePeriodDays: skip.hire_period_days,
+                features: getSkipFeatures(skip)
+              })}
             />
           </SwiperSlide>
         ))}
       </Swiper>
 
-      {/* Scroll Indicator */}
-      {showScrollIndicator && (
-        <motion.div 
-          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-20"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center"
-          >
-            <span className="text-white text-xs font-medium mb-1">Scroll</span>
-            <div className="bg-white/20 backdrop-blur-md rounded-full p-2 shadow-md border border-white/30">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 7L12 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M17 12L12 17L7 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
+     
 
       {/* Component-level styles using styled-jsx */}
       <style jsx global>{`

@@ -11,15 +11,22 @@ export default function ProductCard({
   ],
   price = "216",
   permitRequired = false,
-  onAddToCart
+  onAddToCart,
+  isSelected = false
 }) {
   return (
-    <div className="group relative overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-3xl shadow-lg border border-gray-800/50 transition-all duration-300 hover:shadow-xl hover:shadow-blue-900/20 h-full">
+    <div className={`group relative overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-3xl border border-gray-800/50 transition-all duration-300 h-full ${
+      isSelected 
+        ? 'shadow-xl shadow-blue-900/30' 
+        : 'shadow-lg hover:shadow-xl hover:shadow-blue-900/20'
+    }`}>
       <div className="flex flex-col md:flex-row h-full">
         {/* Image Side */}
         <div className="w-full md:w-2/5 px-4 py-2 lg:p-6 flex items-center justify-center">
           <div className="relative w-full h-48 md:h-72">
-            <div className="absolute inset-0 bg-blue-500 opacity-10 rounded-2xl blur-2xl"></div>
+            <div className={`absolute inset-0 bg-blue-500 rounded-2xl blur-2xl transition-opacity duration-300 ${
+              isSelected ? 'opacity-20' : 'opacity-10'
+            }`}></div>
             <img
               src="/images/skip.jpg"
               alt={title}
@@ -83,22 +90,57 @@ export default function ProductCard({
             <div className="w-full flex justify-end">
               <Button
                 variant="outline"
-                className="w-8 h-8 p-0 bg-white text-black border-none rounded-full text-base font-medium transition-all duration-300 flex items-center justify-center shadow-sm cursor-pointer"
+                className={`w-8 h-8 p-0 border-none rounded-full text-base font-medium transition-all duration-300 flex items-center justify-center shadow-sm cursor-pointer ${
+                  isSelected 
+                    ? 'bg-black text-white' 
+                    : 'bg-white text-black'
+                }`}
                 onClick={onAddToCart}
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
-                </svg>
+                {isSelected ? (
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M19 13H5v-2h14v2z"></path>
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
+                  </svg>
+                )}
               </Button>
             </div>
           </div>
         </div>
       </div>
+      
+      {isSelected && (
+        <div className="absolute bottom-9 left-3 sm:bottom-4 md:bottom-4 lg:bottom-9 lg:left-auto lg:right-3 lg:top-3 z-10">
+          <div className="flex items-center rounded-full px-3 py-1 text-sm font-medium text-white">
+            <svg 
+              className="w-4 h-4 mr-1" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Selected
+          </div>
+        </div>
+      )}
     </div>
   )
 }

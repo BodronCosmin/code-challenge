@@ -1,37 +1,90 @@
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export default function Filters({ 
   isDrawerOpen, 
   toggleDrawer, 
   filters, 
-  setFilters 
+  setFilters,
+  skips,
+  resetFilters
 }) {
-  // Handle filter changes
+  // Get available skip sizes from the API data
+  const [skipSizes, setSkipSizes] = useState([4, 6, 8, 10, 12])
+  const [priceRange, setPriceRange] = useState({min: 200, max: 800})
+  
+  // Temporary filter state that updates UI but doesn't apply until button click
+  const [tempFilters, setTempFilters] = useState(filters)
+
+  // Update available skip sizes and price range based on API data
+  useEffect(() => {
+    if (skips && skips.length > 0) {
+      // Extract unique skip sizes
+      const sizes = [...new Set(skips.map(skip => skip.size))].sort((a, b) => a - b)
+      setSkipSizes(sizes)
+
+      // Find min and max prices
+      const prices = skips.map(skip => Math.round(skip.price_before_vat * (1 + skip.vat / 100)))
+      const min = Math.floor(Math.min(...prices) / 10) * 10 // Round down to nearest 10
+      const max = Math.ceil(Math.max(...prices) / 10) * 10 // Round up to nearest 10
+      
+      setPriceRange({min, max})
+      
+      // Update filter price range if needed
+      if (filters.priceRange[0] < min || filters.priceRange[1] > max) {
+        const updatedFilters = {
+          ...filters,
+          priceRange: [min, max]
+        };
+        setFilters(updatedFilters);
+        setTempFilters(updatedFilters);
+      }
+    }
+  }, [skips])
+  
+  // Update temp filters when actual filters change (like from external reset)
+  useEffect(() => {
+    setTempFilters(filters);
+  }, [filters]);
+
+  // Handle filter changes (only updates UI state)
   const handleSizeToggle = (size) => {
-    setFilters({
-      ...filters,
+    setTempFilters({
+      ...tempFilters,
       skipSizes: {
-        ...filters.skipSizes,
-        [size]: !filters.skipSizes[size],
+        ...tempFilters.skipSizes,
+        [size]: !tempFilters.skipSizes[size],
       },
     })
   }
 
   const handlePriceChange = (e) => {
-    const newMaxPrice = parseInt(e.target.value)
-    setFilters({
-      ...filters,
-      priceRange: [200, newMaxPrice],
+    const value = parseInt(e.target.value)
+    setTempFilters({
+      ...tempFilters,
+      priceRange: [priceRange.min, value],
     })
   }
 
   const handlePermitToggle = () => {
-    setFilters({
-      ...filters,
-      permitRequired: !filters.permitRequired,
+    setTempFilters({
+      ...tempFilters,
+      permitRequired: !tempFilters.permitRequired,
     })
+  }
+
+  const handleHeavyWasteToggle = () => {
+    setTempFilters({
+      ...tempFilters,
+      heavyWasteAllowed: !tempFilters.heavyWasteAllowed,
+    })
+  }
+  
+  // Apply filters when button is clicked
+  const applyFilters = () => {
+    setFilters(tempFilters);
+    toggleDrawer();
   }
 
   return (
@@ -58,7 +111,7 @@ export default function Filters({
             animate={{ y: 0 }}
             exit={{ y: '-100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed inset-x-0 top-0 z-50 bg-black border-b border-gray-800 shadow-lg shadow-blue-900/10 max-h-[90vh] overflow-y-auto"
+            className="fixed inset-x-0 top-0 z-50 bg-black border-b border-gray-800 shadow-lg shadow-blue-900/10 max-h-[80vh] overflow-y-auto"
           >
             <div className="container mx-auto p-6 max-w-6xl">
               <div className="flex justify-between items-center mb-8 sticky top-0 bg-black pt-2 pb-4 z-10">
@@ -85,11 +138,11 @@ export default function Filters({
                     Skip Size
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    {['4', '6', '8', '10', '12'].map((size) => (
+                    {skipSizes.map((size) => (
                       <motion.div
                         key={size}
                         className={`relative p-4 rounded-lg ${
-                          filters.skipSizes[size]
+                          tempFilters.skipSizes[size]
                             ? 'bg-blue-600 border-blue-400'
                             : 'bg-black border-gray-700'
                         } border transition-all duration-200 cursor-pointer text-center`}
@@ -98,7 +151,7 @@ export default function Filters({
                         onClick={() => handleSizeToggle(size)}
                       >
                         <div className="text-xl font-medium">{size}y</div>
-                        {filters.skipSizes[size] && (
+                        {tempFilters.skipSizes[size] && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
@@ -124,109 +177,91 @@ export default function Filters({
                   </div>
                 </div>
 
-                {/* Price Range Filter - Slider */}
+                {/* Price Range Filter */}
                 <div className="bg-black p-6 rounded-xl backdrop-blur-sm border border-gray-800/50 shadow-md">
                   <h3 className="text-lg font-medium mb-5 text-white">
-                    Price Range
+                    Price Range (£{priceRange.min} - £{tempFilters.priceRange[1]})
                   </h3>
+                  
                   <div className="px-2">
-                    <div className="flex justify-between mb-2">
-                      <span className="text-xl">£200</span>
-                      <span className="text-xl">£350</span>
+                    <div className="flex justify-between mb-4">
+                      <span className="text-xl font-medium">£{priceRange.min}</span>
+                      <span className="text-xl font-medium">£{tempFilters.priceRange[1]}</span>
                     </div>
 
-                    <div className="relative py-4 mx-1">
-                      {/* Slider */}
-                      <input
-                        type="range"
-                        min="200"
-                        max="350"
-                        step="1"
-                        value={filters.priceRange[1]}
-                        onChange={handlePriceChange}
-                        className="w-full appearance-none cursor-pointer"
-                      />
-
-                      {/* Slider custom CSS */}
-                      <style jsx global>{`
-                        input[type='range'] {
-                          -webkit-appearance: none;
-                          width: 100%;
-                          height: 2px;
-                          background: #bbb;
-                          border-radius: 999px;
-                          outline: none;
-                          margin: 12px 0;
-                        }
-
-                        input[type='range']::-webkit-slider-thumb {
-                          -webkit-appearance: none;
-                          appearance: none;
-                          width: 20px;
-                          height: 20px;
-                          border-radius: 50%;
-                          background: white;
-                          box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-                          cursor: pointer;
-                          border: none;
-                          transition: transform 0.15s ease,
-                            box-shadow 0.15s ease;
-                        }
-
-                        input[type='range']::-webkit-slider-thumb:hover {
-                          transform: scale(1.1);
-                          box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-                        }
-
-                        input[type='range']::-moz-range-thumb {
-                          width: 20px;
-                          height: 20px;
-                          border-radius: 50%;
-                          background: white;
-                          box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-                          cursor: pointer;
-                          border: none;
-                          transition: transform 0.15s ease,
-                            box-shadow 0.15s ease;
-                        }
-
-                        input[type='range']::-moz-range-thumb:hover {
-                          transform: scale(1.1);
-                          box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-                        }
-
-                        input[type='range']::-webkit-slider-runnable-track,
-                        input[type='range']::-moz-range-track {
-                          background: transparent;
-                          border: none;
-                          outline: none;
-                        }
-
-                        input[type='range']:focus {
-                          outline: none;
-                        }
-                      `}</style>
+                    {/* Maximum Price Slider */}
+                    <input
+                      type="range"
+                      min={priceRange.min}
+                      max={priceRange.max}
+                      step="10"
+                      value={tempFilters.priceRange[1]}
+                      onChange={handlePriceChange}
+                      className="w-full appearance-none cursor-pointer mb-8"
+                    />
+                    
+                    <div className="flex justify-between">
+                      <div className="text-sm text-gray-400">Minimum Price: £{priceRange.min}</div>
+                      <div className="text-sm text-gray-400">Maximum Price: £{tempFilters.priceRange[1]}</div>
                     </div>
 
-                    <div className="flex justify-between items-center">
-                      <div className="text-sm text-gray-400">Min Price</div>
-                      <div className="text-sm text-gray-400">Max Price</div>
-                    </div>
+                    {/* Slider custom CSS */}
+                    <style jsx global>{`
+                      input[type='range'] {
+                        -webkit-appearance: none;
+                        width: 100%;
+                        height: 1px;
+                        background: #555;
+                        border-radius: 999px;
+                        outline: none;
+                      }
+
+                      input[type='range']::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        background: white;
+                        box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+                        cursor: pointer;
+                        border: none;
+                      }
+
+                      input[type='range']::-moz-range-thumb {
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        background: white;
+                        box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+                        cursor: pointer;
+                        border: none;
+                      }
+
+                      input[type='range']::-webkit-slider-runnable-track,
+                      input[type='range']::-moz-range-track {
+                        background: transparent;
+                        border: none;
+                        outline: none;
+                      }
+                    `}</style>
                   </div>
                 </div>
 
-                {/* Permit Requirements Filter - iOS Toggle Switch */}
+                {/* Additional Filters - iOS Toggle Switches */}
                 <div className="bg-black p-6 rounded-xl backdrop-blur-sm border border-gray-800/50 shadow-md">
                   <h3 className="text-lg font-medium mb-5 text-white">
-                    Requirements
+                    Additional Filters
                   </h3>
+                  
+                  {/* Permit Requirements */}
                   <motion.div
-                    className="flex items-center"
+                    className="flex items-center mb-6"
                     whileTap={{ scale: 0.97 }}
                   >
                     <motion.div
-                      className={`relative w-14 h-7 rounded-full cursor-pointer transition-colors duration-300 ease-in-out border border-gray-800/50  ${
-                        filters.permitRequired ? 'bg-[#155dfc]' : 'bg-black'
+                      className={`relative w-14 h-7 rounded-full cursor-pointer transition-colors duration-300 ease-in-out border border-gray-800/50 ${
+                        tempFilters.permitRequired ? 'bg-[#155dfc]' : 'bg-black'
                       }`}
                       onClick={handlePermitToggle}
                       style={{
@@ -241,7 +276,7 @@ export default function Filters({
                         }}
                         initial={false}
                         animate={{
-                          x: filters.permitRequired ? 30 : 0,
+                          x: tempFilters.permitRequired ? 30 : 0,
                         }}
                         transition={{
                           type: 'spring',
@@ -254,17 +289,69 @@ export default function Filters({
                       Show only skips that require a permit
                     </label>
                   </motion.div>
+                  
+                  {/* Heavy Waste Toggle */}
+                  <motion.div
+                    className="flex items-center"
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <motion.div
+                      className={`relative w-14 h-7 rounded-full cursor-pointer transition-colors duration-300 ease-in-out border border-gray-800/50 ${
+                        tempFilters.heavyWasteAllowed ? 'bg-[#155dfc]' : 'bg-black'
+                      }`}
+                      onClick={handleHeavyWasteToggle}
+                      style={{
+                        padding: '2px',
+                      }}
+                    >
+                      <motion.div
+                        className="bg-white rounded-full shadow-md"
+                        style={{
+                          width: '20px',
+                          height: '20px',
+                        }}
+                        initial={false}
+                        animate={{
+                          x: tempFilters.heavyWasteAllowed ? 30 : 0,
+                        }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 550,
+                          damping: 35,
+                        }}
+                      />
+                    </motion.div>
+                    <label className="ml-3 text-sm font-medium cursor-pointer">
+                      Suitable for heavy materials
+                    </label>
+                  </motion.div>
                 </div>
               </div>
 
-              <div className="mt-8 mb-4 flex justify-end sticky bottom-0 bg-black pt-4 pb-2 z-10">
+              <div className="mt-8 mb-4 flex justify-between sticky bottom-0 bg-black pt-4 pb-2 z-10">
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+       {/*            <Button
+                 className=" bg-white/80 text-black border boorder-white hover:bg-gray-200 rounded-full px-5 py-2 cursor-pointer"
+               
+                    onClick={() => {
+                      resetFilters();
+                      toggleDrawer();
+                    }}
+                  >
+                    Reset Filters
+                  </Button> */}
+                </motion.div>
+                
                 <motion.div
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
                   <Button
                     className="bg-black border-2 border-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-full shadow-lg shadow-blue-900/20 font-medium cursor-pointer"
-                    onClick={toggleDrawer}
+                    onClick={applyFilters}
                   >
                     Apply Filters
                   </Button>
