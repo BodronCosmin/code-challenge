@@ -11,23 +11,16 @@ import 'swiper/css/pagination';
 import { Pagination } from 'swiper/modules';
 import ProductCard from './ProductCard';
 
-export default function SwiperMobile({ skips, getSkipDescription, getSkipFeatures, calculateFinalPrice, onAddToCart, cart }) {
+export default function SwiperMobile({ 
+  skips, 
+  getSkipDescription, 
+  getSkipFeatures, 
+  calculateFinalPrice, 
+  onAddToCart, 
+  cart,
+  onSwiper 
+}) {
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
-  const swiperRef = useRef(null);
-
-  // Automatically hide the indicator after some scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 150) {
-        setShowScrollIndicator(false);
-      } else {
-        setShowScrollIndicator(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Wrapper function for the onAddToCart to trigger scroll to bottom
   const handleAddToCart = (skipData) => {
@@ -57,11 +50,10 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
         longSwipesRatio={0.2}
         followFinger={true}
         threshold={5}
-   
-        ref={swiperRef}
+        onSwiper={onSwiper}
       >
         {skips.map((skip) => (
-          <SwiperSlide key={skip.id} >
+          <SwiperSlide key={skip.id}>
             <ProductCard 
               size={skip.size.toString()}
               title={`${skip.size} Yard Skip`}
@@ -86,8 +78,6 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
           </SwiperSlide>
         ))}
       </Swiper>
-
-     
 
       {/* Component-level styles using styled-jsx */}
       <style jsx global>{`

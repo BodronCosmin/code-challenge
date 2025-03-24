@@ -7,9 +7,12 @@ import ProductCard from '@/components/ui/ProductCard'
 import Filters from '@/components/ui/Filters'
 import Cart from '@/components/ui/Cart'
 import NoResults from '@/components/ui/NoResults'
-import { ArrowDownIcon, FilterIcon } from '@/components/ui/Svg'
+import { ArrowDownIcon, FilterIcon, LeftShowIndicatorIcon, RightShowIndicatorIcon } from '@/components/ui/Svg'
 
 export default function SkipSelectionComponent() {
+  // State pentru Swiper
+  const [swiperInstance, setSwiperInstance] = useState(null)
+
   // State to track the active step (2 is the current "Select Skip" step)
 
   // State to control drawer visibility
@@ -213,6 +216,19 @@ export default function SkipSelectionComponent() {
     })
   }
 
+  // Funcții pentru navigarea Swiper-ului
+  const handlePrevSlide = () => {
+    if (swiperInstance) {
+      swiperInstance.slidePrev()
+    }
+  }
+
+  const handleNextSlide = () => {
+    if (swiperInstance) {
+      swiperInstance.slideNext()
+    }
+  }
+
   return (
     <div className="min-h-screen w-full bg-black text-white">
       {/* Filter Component */}
@@ -238,15 +254,31 @@ export default function SkipSelectionComponent() {
             Select the skip size that best suits your needs
           </p>
         </div>
-        <div className="max-w-6xl mx-auto flex rounded-lg py-[10px] px-[20px] mb-[20px] justify-end gap-[10px]">
-          <p className="text-2xl font-bold ">Filter</p>
-          <Button
-            variant="outline"
-            className="w-8 h-8 p-0 bg-white text-black border-none rounded-full text-base font-medium transition-all duration-300 flex items-center justify-center shadow-sm cursor-pointer"
-            onClick={toggleDrawer}
-          >
-            <FilterIcon />
-          </Button>
+        <div className="max-w-6xl mx-auto flex rounded-lg py-[10px] px-[20px] mb-[20px] justify-between md:justify-end gap-[10px]">
+          <div className="flex items-center gap-[10px]">
+            <p className="text-2xl font-bold">Filter</p>
+            <Button
+              variant="outline"
+              className="w-8 h-8 p-0 bg-white text-black border-none rounded-full text-base font-medium transition-all duration-300 flex items-center justify-center shadow-sm cursor-pointer"
+              onClick={toggleDrawer}
+            >
+              <FilterIcon />
+            </Button>
+          </div>
+          <div className="flex items-center md:hidden gap-4">
+            <button 
+              onClick={handlePrevSlide}
+              className="focus:outline-none hover:opacity-75 transition-opacity cursor-pointer"
+            >
+              <LeftShowIndicatorIcon/>
+            </button>
+            <button 
+              onClick={handleNextSlide}
+              className="focus:outline-none hover:opacity-75 transition-opacity cursor-pointer"
+            >
+              <RightShowIndicatorIcon/>
+            </button>
+          </div>
         </div>
 
         {/* Loading state */}
@@ -279,13 +311,9 @@ export default function SkipSelectionComponent() {
           />
         )}
 
-        {/* Mobile Swiper (visible on mobile only) */}
+        {/* Mobile Swiper */}
         {!loading && !error && filteredSkips.length > 0 && (
-          <div
-            className={`${
-              isCartOpen ? 'mb-[75px]' : 'mb-[0px]'
-            } block md:hidden max-w-6xl mx-auto relative`}
-          >
+          <div className={`${isCartOpen ? 'mb-[75px]' : 'mb-[0px]'} block md:hidden max-w-6xl mx-auto relative`}>
             <SwiperMobile
               skips={filteredSkips}
               getSkipDescription={getSkipDescription}
@@ -293,8 +321,8 @@ export default function SkipSelectionComponent() {
               calculateFinalPrice={calculateFinalPrice}
               cart={cart}
               onAddToCart={handleAddToCart}
+              onSwiper={setSwiperInstance}
             />
-          
           </div>
         )}
 
