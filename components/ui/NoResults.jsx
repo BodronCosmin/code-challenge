@@ -14,9 +14,9 @@ export default function NoResults({ resetFilters, toggleDrawer,isCartOpen }) {
       <p className="text-gray-400 mb-6">
         We couldn't find any skips matching your current filters.
       </p>
-      <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-3 justify-center">
+      <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-3 justify-center items-center">
         <Button
-          className="hover:bg-gray-200 rounded-full px-5 py-2 cursor-pointer"
+          className="hover:bg-gray-200 rounded-full px-5 py-2 cursor-pointer "
           variant="outline"
           onClick={resetFilters}
         >
