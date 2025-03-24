@@ -16,7 +16,7 @@ export default function ProductCard({
   isSelected = false
 }) {
   return (
-    <div className={`group relative overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-3xl border border-gray-800/50 transition-all duration-300 h-full ${
+    <div    onClick={onAddToCart} className={`group cursor-pointer relative overflow-hidden bg-gradient-to-br from-gray-900 to-black rounded-3xl border border-gray-800/50 transition-all duration-300 h-full ${
       isSelected 
         ? 'shadow-xl shadow-blue-900/30' 
         : 'shadow-lg hover:shadow-xl hover:shadow-blue-900/20'
@@ -103,7 +103,7 @@ export default function ProductCard({
                       ? 'bg-black text-white' 
                       : 'bg-white text-black'
                   }`}
-                  onClick={onAddToCart}
+               
                 >
                   {isSelected ? (
                     <MinusIcon/>
