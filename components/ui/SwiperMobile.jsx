@@ -57,9 +57,7 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
         longSwipesRatio={0.2}
         followFinger={true}
         threshold={5}
-        pagination={{
-          clickable: true,
-        }}
+   
         ref={swiperRef}
       >
         {skips.map((skip) => (

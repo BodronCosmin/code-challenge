@@ -88,29 +88,37 @@ export default function ProductCard({
                 per week
               </span>
             </div>
-            <div className="w-full flex justify-end">
-              <Button
-                variant="outline"
-                className={`w-8 h-8 p-0 border-none rounded-full text-base font-medium transition-all duration-300 flex items-center justify-center shadow-sm cursor-pointer ${
-                  isSelected 
-                    ? 'bg-black text-white' 
-                    : 'bg-white text-black'
-                }`}
-                onClick={onAddToCart}
-              >
-                {isSelected ? (
-                  <MinusIcon/>
-                ) : (
-                <PlusIcon/>
-                )}
-              </Button>
+            <div className="w-full flex justify-between md:justify-end items-center">
+              {isSelected && (
+                <div className="sm:hidden flex items-center rounded-full text-sm font-medium text-white">
+                  <IsSelectedIcon/>
+                  <span className="ml-1">Selected</span>
+                </div>
+              )}
+              <div className={isSelected ? "" : "ml-auto"}>
+                <Button
+                  variant="outline"
+                  className={`w-8 h-8 p-0 border-none rounded-full text-base font-medium transition-all duration-300 flex items-center justify-center shadow-sm cursor-pointer ${
+                    isSelected 
+                      ? 'bg-black text-white' 
+                      : 'bg-white text-black'
+                  }`}
+                  onClick={onAddToCart}
+                >
+                  {isSelected ? (
+                    <MinusIcon/>
+                  ) : (
+                  <PlusIcon/>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       
       {isSelected && (
-        <div className="absolute bottom-9 left-3 sm:bottom-4 md:bottom-4 lg:bottom-9 lg:left-auto lg:right-3 lg:top-3 z-10">
+        <div className="absolute bottom-9 left-3 sm:bottom-4 md:bottom-4 lg:bottom-9 lg:left-auto lg:right-3 lg:top-3 z-10 hidden sm:block">
           <div className="flex items-center rounded-full px-3 py-1 text-sm font-medium text-white">
            <IsSelectedIcon/>
             Selected
