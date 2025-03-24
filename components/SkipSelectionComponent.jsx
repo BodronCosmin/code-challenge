@@ -9,7 +9,7 @@ import Cart from '@/components/ui/Cart'
 import NoResults from '@/components/ui/NoResults'
 import { ArrowDownIcon, FilterIcon } from '@/components/ui/Svg'
 
-export default function SkipSelection() {
+export default function SkipSelectionComponent() {
   // State to track the active step (2 is the current "Select Skip" step)
 
   // State to control drawer visibility

@@ -1,27 +1,13 @@
 import { Button } from '@/components/ui/button'
+import { NoResultsIcon } from './Svg'
 
-export default function NoResults({ resetFilters, toggleDrawer }) {
+export default function NoResults({ resetFilters, toggleDrawer,isCartOpen }) {
   return (
-    <div className="text-center py-12 px-4 max-w-md mx-auto">
+    <div className={`text-center py-12 px-4 max-w-md mx-auto ${isCartOpen ? 'mb-[75px]' : 'mb-[0px]'}`}>
       <div className="relative mb-6 mx-auto w-32 h-32">
         <div className="absolute inset-0 bg-blue-500 opacity-9 rounded-full blur-xl"></div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="64"
-            height="64"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-white opacity-80"
-          >
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.3-4.3"></path>
-            <path d="M8 11h6"></path>
-          </svg>
+        <NoResultsIcon/>
         </div>
       </div>
       <h2 className="text-2xl font-bold mb-2">No Skips Found</h2>

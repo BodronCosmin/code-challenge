@@ -1,5 +1,6 @@
 import { Button } from "./button"
 import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRightIcon } from "./Svg"
 
 export default function Cart({ isCartOpen, cart, clearCart, onContinue }) {
   return (
@@ -41,27 +42,18 @@ export default function Cart({ isCartOpen, cart, clearCart, onContinue }) {
               </div>
 
               {/* Icon Button (original style) */}
-              <div>
+              <div className="flex items-center space-x-0 md:space-x-1">
+          {/*     <p className="text-[13px] md:text-[16px]">Continue</p> */}
                 <Button
                   variant="ghost"
-                  className="bg-black text-white rounded-full p-0 flex items-center justify-center border-none shadow-sm cursor-pointer"
+                  className="bg-black text-white  rounded-full p-0 flex items-center justify-center border-none shadow-sm cursor-pointer"
                   onClick={onContinue || (() => console.log('Proceeding to next step with', cart))}
                   style={{ width: '40px', height: '40px' }}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    style={{ width: '20px', height: '20px' }}
-                  >
-                    <path d="M5 12h14"></path>
-                    <path d="m12 5 7 7-7 7"></path>
-                  </svg>
+           
+                <ArrowRightIcon/>
                 </Button>
+               
               </div>
             </div>
           </div>

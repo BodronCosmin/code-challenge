@@ -1,4 +1,5 @@
 import { Button } from "./button"
+import { IsSelectedIcon, MinusIcon, PlusIcon } from "./Svg"
 
 export default function ProductCard({
   size = "4",
@@ -98,23 +99,9 @@ export default function ProductCard({
                 onClick={onAddToCart}
               >
                 {isSelected ? (
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M19 13H5v-2h14v2z"></path>
-                  </svg>
+                  <MinusIcon/>
                 ) : (
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
-                  </svg>
+                <PlusIcon/>
                 )}
               </Button>
             </div>
@@ -125,18 +112,7 @@ export default function ProductCard({
       {isSelected && (
         <div className="absolute bottom-9 left-3 sm:bottom-4 md:bottom-4 lg:bottom-9 lg:left-auto lg:right-3 lg:top-3 z-10">
           <div className="flex items-center rounded-full px-3 py-1 text-sm font-medium text-white">
-            <svg 
-              className="w-4 h-4 mr-1" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
+           <IsSelectedIcon/>
             Selected
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { CheckIcon, CloseIcon } from './Svg'
 
 export default function Filters({ 
   isDrawerOpen, 
@@ -121,13 +122,7 @@ export default function Filters({
                   className="w-8 h-8 p-0 bg-white text-black border-none rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-all duration-200 cursor-pointer"
                   onClick={toggleDrawer}
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                  </svg>
+                <CloseIcon/>
                 </Button>
               </div>
 
@@ -157,19 +152,7 @@ export default function Filters({
                             animate={{ scale: 1 }}
                             className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-md"
                           >
-                            <svg
-                              className="w-4 h-4 text-white"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
+                            <CheckIcon/>
                           </motion.div>
                         )}
                       </motion.div>
@@ -266,17 +249,23 @@ export default function Filters({
                       onClick={handlePermitToggle}
                       style={{
                         padding: '2px',
+                        minWidth: '48px',
+                        height: '26px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: tempFilters.permitRequired ? 'flex-end' : 'flex-start'
                       }}
                     >
                       <motion.div
-                        className="bg-white rounded-full shadow-md"
+                        className="bg-white rounded-full shadow-md absolute"
                         style={{
-                          width: '20px',
-                          height: '20px',
+                          width: '22px',
+                          height: '22px',
+                          left: tempFilters.permitRequired ? 'auto' : '2px',
+                          right: tempFilters.permitRequired ? '2px' : 'auto',
                         }}
-                        initial={false}
                         animate={{
-                          x: tempFilters.permitRequired ? 30 : 0,
+                          opacity: 1
                         }}
                         transition={{
                           type: 'spring',
@@ -302,17 +291,23 @@ export default function Filters({
                       onClick={handleHeavyWasteToggle}
                       style={{
                         padding: '2px',
+                        minWidth: '48px',
+                        height: '26px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: tempFilters.heavyWasteAllowed ? 'flex-end' : 'flex-start'
                       }}
                     >
                       <motion.div
-                        className="bg-white rounded-full shadow-md"
+                        className="bg-white rounded-full shadow-md absolute"
                         style={{
-                          width: '20px',
-                          height: '20px',
+                          width: '22px',
+                          height: '22px',
+                          left: tempFilters.heavyWasteAllowed ? 'auto' : '2px',
+                          right: tempFilters.heavyWasteAllowed ? '2px' : 'auto',
                         }}
-                        initial={false}
                         animate={{
-                          x: tempFilters.heavyWasteAllowed ? 30 : 0,
+                          opacity: 1
                         }}
                         transition={{
                           type: 'spring',
