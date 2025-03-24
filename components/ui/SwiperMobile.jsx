@@ -1,7 +1,7 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -13,6 +13,7 @@ import ProductCard from './ProductCard';
 
 export default function SwiperMobile({ skips, getSkipDescription, getSkipFeatures, calculateFinalPrice, onAddToCart, cart }) {
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const swiperRef = useRef(null);
 
   // Automatically hide the indicator after some scrolling
   useEffect(() => {
@@ -28,12 +29,35 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Wrapper function for the onAddToCart to trigger scroll to bottom
+  const handleAddToCart = (skipData) => {
+    // Call the original onAddToCart function
+    onAddToCart && onAddToCart(skipData);
+    
+    // Scroll to bottom of the page smoothly
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }, 100);
+  };
+
   return (
     <div className="relative">
       <Swiper
         direction={'vertical'}
         modules={[Pagination]}
         className="mySwiper"
+        cssMode={true}
+        resistance={false}
+        resistanceRatio={0}
+        speed={800}
+        longSwipesMs={300}
+        longSwipesRatio={0.2}
+        followFinger={true}
+        threshold={5}
+        ref={swiperRef}
       >
         {skips.map((skip) => (
           <SwiperSlide key={skip.id} >
@@ -45,7 +69,7 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
               price={calculateFinalPrice(skip).toString()}
               permitRequired={!skip.allowed_on_road}
               isSelected={cart && cart.id === skip.id}
-              onAddToCart={() => onAddToCart && onAddToCart({
+              onAddToCart={() => handleAddToCart({
                 id: skip.id,
                 size: skip.size.toString(),
                 title: `${skip.size} Yard Skip`,
@@ -70,6 +94,20 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
           width: 100%;
           height: 70vh;
           background-color: transparent !important;
+          overflow: hidden;
+          touch-action: pan-y;
+          -webkit-overflow-scrolling: touch;
+          --swiper-theme-color: #fff;
+          --swiper-transition-duration: 800ms;
+          --swiper-transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        /* iOS Safari fix for bounce effect and improved performance - 
+           scoped only to swiper container, not whole page */
+        @supports (-webkit-touch-callout: none) {
+          .swiper-container {
+            overscroll-behavior-y: none;
+          }
         }
 
         .swiper-slide {
