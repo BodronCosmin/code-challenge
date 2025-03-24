@@ -294,27 +294,7 @@ export default function SkipSelectionComponent() {
               cart={cart}
               onAddToCart={handleAddToCart}
             />
-            {!isCartOpen && (
-              <motion.div
-                className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-20 w-full h-[17px]"
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 10, repeat: Infinity }}
-              >
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{
-                    duration: 10,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                  className="flex flex-col items-center"
-                >
-                  <div className="rounded-full p-1 shadow-md bg-black w-full flex justify-center items-center">
-                    <ArrowDownIcon />
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
+          
           </div>
         )}
 

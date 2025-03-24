@@ -46,7 +46,7 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
   return (
     <div className="relative">
       <Swiper
-        direction={'vertical'}
+        direction={'horizontal'}
         modules={[Pagination]}
         className="mySwiper"
         cssMode={true}
@@ -57,6 +57,9 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
         longSwipesRatio={0.2}
         followFinger={true}
         threshold={5}
+        pagination={{
+          clickable: true,
+        }}
         ref={swiperRef}
       >
         {skips.map((skip) => (
@@ -95,7 +98,7 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
           height: 70vh;
           background-color: transparent !important;
           overflow: hidden;
-          touch-action: pan-y;
+          touch-action: pan-x;
           -webkit-overflow-scrolling: touch;
           --swiper-theme-color: #fff;
           --swiper-transition-duration: 800ms;
@@ -106,7 +109,7 @@ export default function SwiperMobile({ skips, getSkipDescription, getSkipFeature
            scoped only to swiper container, not whole page */
         @supports (-webkit-touch-callout: none) {
           .swiper-container {
-            overscroll-behavior-y: none;
+            overscroll-behavior-x: none;
           }
         }
 
